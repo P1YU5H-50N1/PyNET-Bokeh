@@ -1,12 +1,26 @@
 # Copyright 2020 by Andrey Ignatov. All Rights Reserved.
 
 from __future__ import print_function
-from scipy import misc
+# from scipy import misc
+import imageio as io
 from PIL import Image
 import imageio
 import os
 import numpy as np
 
+def iresize(arr, size, interp='bilinear', mode=None):
+    im = Image.fromarray(arr, mode=mode)
+    ts = type(size)
+    if issubdtype(ts, numpy.signedinteger):
+        percent = size / 100.0
+        size = tuple((array(im.size)*percent).astype(int))
+    elif issubdtype(type(size), numpy.floating):
+        size = tuple((array(im.size)*size).astype(int))
+    else:
+        size = (size[1], size[0])
+    func = {'nearest': 0, 'lanczos': 1, 'bilinear': 2, 'bicubic': 3, 'cubic': 3}
+    imnew = io.core.util.Array(im.resize(size, resample=func[interp]))
+    return imnew
 
 def load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE):
 
@@ -23,11 +37,11 @@ def load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE):
 
     for i in range(0, NUM_TEST_IMAGES):
 
-        I = misc.imread(test_directory_orig + str(i) + '.jpg')
-        I_depth = misc.imread(test_directory_orig_depth + str(i) + '.png')
+        I = io.imread(test_directory_orig + str(i) + '.jpg')
+        I_depth = io.imread(test_directory_orig_depth + str(i) + '.png')
 
         # Downscaling the image by a factor of 2
-        I = misc.imresize(I, 0.5, interp='bicubic')
+        I = iresize(I, 0.5, interp='bicubic')
 
         # Making sure that its width is multiple of 32
         new_width = int(I.shape[1]/32) * 32
@@ -46,8 +60,8 @@ def load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE):
         I = np.float32(I[:, y:y + PATCH_WIDTH, :]) / 255.0
         test_data[i, :] = I
 
-        I = misc.imread(test_directory_blur + str(i) + '.jpg')
-        I = np.float32(misc.imresize(I[:, y*2:y*2 + 1024, :], DSLR_SCALE / 2, interp='bicubic')) / 255.0
+        I = io.imread(test_directory_blur + str(i) + '.jpg')
+        I = np.float32(iresize(I[:, y*2:y*2 + 1024, :], DSLR_SCALE / 2, interp='bicubic')) / 255.0
         test_answ[i, :] = I
 
     return test_data, test_answ
@@ -71,11 +85,11 @@ def load_training_batch(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE, trai
     i = 0
     for img in TRAIN_IMAGES:
 
-        I = misc.imread(test_directory_orig + str(img) + '.jpg')
-        I_depth = misc.imread(test_directory_orig_depth + str(img) + '.png')
+        I = io.imread(test_directory_orig + str(img) + '.jpg')
+        I_depth = io.imread(test_directory_orig_depth + str(img) + '.png')
 
         # Downscaling the image by a factor of 2
-        I = misc.imresize(I, 0.5, interp='bicubic')
+        I = iresize(I, 0.5, interp='bicubic')
 
         # Making sure that its width is multiple of 32
         new_width = int(I.shape[1] / 32) * 32
@@ -94,8 +108,8 @@ def load_training_batch(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE, trai
         I = np.float32(I[:, y:y + PATCH_WIDTH, :]) / 255.0
         test_data[i, :] = I
 
-        I = misc.imread(test_directory_blur + str(img) + '.jpg')
-        I = np.float32(misc.imresize(I[:, y * 2:y * 2 + 1024, :], DSLR_SCALE / 2, interp='bicubic')) / 255.0
+        I = io.imread(test_directory_blur + str(img) + '.jpg')
+        I = np.float32(iresize(I[:, y * 2:y * 2 + 1024, :], DSLR_SCALE / 2, interp='bicubic')) / 255.0
         test_answ[i, :] = I
 
         i += 1
@@ -105,11 +119,11 @@ def load_training_batch(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE, trai
 
 def load_input_image(image_dir, depth_maps_dir, photo):
 
-    I = misc.imread(image_dir + photo)
-    I_depth = misc.imread(depth_maps_dir + str(photo.split(".")[0]) + '.png')
+    I = io.imread(image_dir + photo)
+    I_depth = io.imread(depth_maps_dir + str(photo.split(".")[0]) + '.png')
 
     # Downscaling the image by a factor of 2
-    I = misc.imresize(I, 0.5, interp='bicubic')
+    I = iresize(I, 0.5, interp='bicubic')
 
     # Making sure that its width is multiple of 32
     new_width = int(I.shape[1] / 32) * 32

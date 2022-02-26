@@ -2,6 +2,8 @@
 
 from scipy import misc
 import numpy as np
+import imageio as io
+from PIL import Image
 import tensorflow as tf
 import sys
 import os
@@ -92,7 +94,7 @@ with tf.compat.v1.Session(config=config) as sess:
 
         # Save the results as .png images
         photo_name = photo.rsplit(".", 1)[0]
-        misc.imsave("results/full-resolution/" + photo_name + "_level_" + str(LEVEL) +
+        io.imsave("results/full-resolution/" + photo_name + "_level_" + str(LEVEL) +
                         "_iteration_" + str(restore_iter) + ".png", bokeh_image)
 
     # ------------------------------------------------------------------------
@@ -119,8 +121,13 @@ with tf.compat.v1.Session(config=config) as sess:
 
         I = load_input_image(test_directory_orig, test_directory_orig_depth, photo)
 
-        Y = misc.imread(test_directory_blur + photo) / 255.0
-        Y = np.float32(misc.imresize(Y, DSLR_SCALE / 2, interp='bicubic')) / 255.0
+        Y = io.imread(test_directory_blur + photo) / 255.0
+        
+        Y = Image.fromarray(Y)
+        sz = (int(Y.size[0]*DSLR_SCALE/2),int(Y.size[1]*DSLR_SCALE/2))
+        Y = Y.resize(sz,Image.BICUBIC)
+        Y = io.core.util.Array(np.array(Y))
+        # Y = np.float32(misc.imresize(Y, DSLR_SCALE / 2, interp='bicubic')) / 255.0
         Y = np.reshape(Y, [1, Y.shape[0], Y.shape[1], 3])
 
         loss_psnr_temp, loss_ssim_temp, loss_msssim_temp = sess.run([loss_psnr, loss_ssim, loss_ms_ssim],
