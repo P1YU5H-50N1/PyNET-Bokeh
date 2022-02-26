@@ -12,10 +12,10 @@ from numpy import issubdtype
 def iresize(arr, size, interp='bilinear', mode=None):
     im = Image.fromarray(arr, mode=mode)
     ts = type(size)
-    if issubdtype(ts, numpy.signedinteger):
+    if issubdtype(ts, np.signedinteger):
         percent = size / 100.0
         size = tuple((array(im.size)*percent).astype(int))
-    elif issubdtype(type(size), numpy.floating):
+    elif issubdtype(type(size), np.floating):
         size = tuple((array(im.size)*size).astype(int))
     else:
         size = (size[1], size[0])
