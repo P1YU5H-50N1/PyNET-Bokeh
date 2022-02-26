@@ -164,7 +164,7 @@ with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
         [loss_temp, temp] = sess.run([loss_generator, train_step_gen], feed_dict={input_: phone_images, target_: dslr_images})
         training_loss += loss_temp / eval_step
 
-        # if i % eval_step == 0:
+        if i % eval_step == 0:
 
         #     # Evaluate PyNET model
 
@@ -222,8 +222,8 @@ with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
 
         #     training_loss = 0.0
 
-        #     # Saving the model that corresponds to the current iteration
-        #     saver.save(sess, "models/pynet_level_" + str(LEVEL) + "_iteration_" + str(i) + ".ckpt", write_meta_graph=False)
+            # Saving the model that corresponds to the current iteration
+            saver.save(sess, "models/pynet_level_" + str(LEVEL) + "_iteration_" + str(i) + ".ckpt", write_meta_graph=False)
 
         # Loading new training data
         if i % 1000 == 0:
