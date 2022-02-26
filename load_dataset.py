@@ -7,6 +7,7 @@ from PIL import Image
 import imageio
 import os
 import numpy as np
+from numpy import issubdtype
 
 def iresize(arr, size, interp='bilinear', mode=None):
     im = Image.fromarray(arr, mode=mode)
