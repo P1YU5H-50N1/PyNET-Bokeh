@@ -20,7 +20,7 @@ def iresize(arr, size, interp='bilinear', mode=None):
     else:
         size = (size[1], size[0])
     func = {'nearest': 0, 'lanczos': 1, 'bilinear': 2, 'bicubic': 3, 'cubic': 3}
-    imnew = io.core.util.Array(im.resize(size, resample=func[interp]))
+    imnew = io.core.util.Array(np.array(im.resize(size, resample=func[interp])))
     return imnew
 
 def load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE):
