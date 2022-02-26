@@ -25,7 +25,7 @@ def iresize(arr, size, interp='bilinear', mode=None):
 def load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE):
 
     test_directory_orig = dataset_dir + 'test/original/'
-    test_directory_orig_depth = dataset_dir + 'test/original_depth/'
+    # test_directory_orig_depth = dataset_dir + 'test/original_depth/'
     test_directory_blur = dataset_dir + 'test/bokeh/'
 
     #NUM_TEST_IMAGES = 200
@@ -38,7 +38,7 @@ def load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE):
     for i in range(0, NUM_TEST_IMAGES):
 
         I = io.imread(test_directory_orig + str(i) + '.jpg')
-        I_depth = io.imread(test_directory_orig_depth + str(i) + '.png')
+        # I_depth = io.imread(test_directory_orig_depth + str(i) + '.png')
 
         # Downscaling the image by a factor of 2
         I = iresize(I, 0.5, interp='bicubic')
@@ -50,7 +50,7 @@ def load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE):
         # Stacking the image together with its depth map
         I_temp = np.zeros((I.shape[0], I.shape[1], 4))
         I_temp[:, :, 0:3] = I
-        I_temp[:, :, 3] = I_depth
+        # I_temp[:, :, 3] = I_depth
         I = I_temp
 
         h, w, d = I.shape
@@ -70,7 +70,7 @@ def load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE):
 def load_training_batch(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE, train_size):
 
     test_directory_orig = dataset_dir + 'train/original/'
-    test_directory_orig_depth = dataset_dir + 'train/original_depth/'
+    # test_directory_orig_depth = dataset_dir + 'train/original_depth/'
     test_directory_blur = dataset_dir + 'train/bokeh/'
 
     # NUM_TRAINING_IMAGES = 4894
@@ -86,7 +86,7 @@ def load_training_batch(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE, trai
     for img in TRAIN_IMAGES:
 
         I = io.imread(test_directory_orig + str(img) + '.jpg')
-        I_depth = io.imread(test_directory_orig_depth + str(img) + '.png')
+        # I_depth = io.imread(test_directory_orig_depth + str(img) + '.png')
 
         # Downscaling the image by a factor of 2
         I = iresize(I, 0.5, interp='bicubic')
@@ -98,7 +98,7 @@ def load_training_batch(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE, trai
         # Stacking the image together with its depth map
         I_temp = np.zeros((I.shape[0], I.shape[1], 4))
         I_temp[:, :, 0:3] = I
-        I_temp[:, :, 3] = I_depth
+        # I_temp[:, :, 3] = I_depth
         I = I_temp
 
         h, w, d = I.shape
@@ -120,7 +120,7 @@ def load_training_batch(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE, trai
 def load_input_image(image_dir, depth_maps_dir, photo):
 
     I = io.imread(image_dir + photo)
-    I_depth = io.imread(depth_maps_dir + str(photo.split(".")[0]) + '.png')
+    # I_depth = io.imread(depth_maps_dir + str(photo.split(".")[0]) + '.png')
 
     # Downscaling the image by a factor of 2
     I = iresize(I, 0.5, interp='bicubic')
@@ -128,12 +128,12 @@ def load_input_image(image_dir, depth_maps_dir, photo):
     # Making sure that its width is multiple of 32
     new_width = int(I.shape[1] / 32) * 32
     I = I[:, 0:new_width, :]
-    I_depth = I_depth[:, 0:new_width]
+    # I_depth = I_depth[:, 0:new_width]
 
     # Stacking the image together with its depth map
     I_temp = np.zeros((I.shape[0], I.shape[1], 4))
     I_temp[:, :, 0:3] = I
-    I_temp[:, :, 3] = I_depth
+    # I_temp[:, :, 3] = I_depth
 
     I = np.float32(I_temp) / 255.0
     I = np.reshape(I, [1, I.shape[0], I.shape[1], 4])
