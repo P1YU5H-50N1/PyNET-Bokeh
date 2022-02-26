@@ -123,12 +123,12 @@ with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
     train_data, train_answ = load_training_batch(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE, train_size)
     print("Training data was loaded\n")
 
-    TEST_SIZE = test_data.shape[0]
-    num_test_batches = int(test_data.shape[0] / batch_size)
+    # TEST_SIZE = test_data.shape[0]
+    # num_test_batches = int(test_data.shape[0] / batch_size)
 
-    visual_crops_ids = np.random.randint(0, TEST_SIZE, batch_size)
-    visual_test_crops = test_data[visual_crops_ids, :]
-    visual_target_crops = test_answ[visual_crops_ids, :]
+    # visual_crops_ids = np.random.randint(0, TEST_SIZE, batch_size)
+    # visual_test_crops = test_data[visual_crops_ids, :]
+    # visual_target_crops = test_answ[visual_crops_ids, :]
 
     print("Training network")
 
