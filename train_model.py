@@ -115,7 +115,8 @@ with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
     # Loading training and test data
 
     print("Loading test data...")
-    test_data, test_answ = load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE)
+    test_data,test_answ= [[],[]],[[],[]]
+    # test_data, test_answ = load_test_data(dataset_dir, PATCH_WIDTH, PATCH_HEIGHT, DSLR_SCALE)
     print("Test data was loaded\n")
 
     print("Loading training data...")
@@ -163,66 +164,66 @@ with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
         [loss_temp, temp] = sess.run([loss_generator, train_step_gen], feed_dict={input_: phone_images, target_: dslr_images})
         training_loss += loss_temp / eval_step
 
-        if i % eval_step == 0:
+        # if i % eval_step == 0:
 
-            # Evaluate PyNET model
+        #     # Evaluate PyNET model
 
-            test_losses = np.zeros((1, 6 if LEVEL < 4 else 5))
+        #     test_losses = np.zeros((1, 6 if LEVEL < 4 else 5))
 
-            for j in range(num_test_batches):
+        #     for j in range(num_test_batches):
 
-                be = j * batch_size
-                en = (j+1) * batch_size
+        #         be = j * batch_size
+        #         en = (j+1) * batch_size
 
-                phone_images = test_data[be:en]
-                dslr_images = test_answ[be:en]
+        #         phone_images = test_data[be:en]
+        #         dslr_images = test_answ[be:en]
 
-                if LEVEL < 4:
-                    losses = sess.run([loss_generator, loss_content, loss_mse, loss_psnr, loss_l1, loss_ms_ssim], \
-                                    feed_dict={input_: phone_images, target_: dslr_images})
-                else:
-                    losses = sess.run([loss_generator, loss_content, loss_mse, loss_psnr, loss_l1], \
-                                      feed_dict={input_: phone_images, target_: dslr_images})
+        #         if LEVEL < 4:
+        #             losses = sess.run([loss_generator, loss_content, loss_mse, loss_psnr, loss_l1, loss_ms_ssim], \
+        #                             feed_dict={input_: phone_images, target_: dslr_images})
+        #         else:
+        #             losses = sess.run([loss_generator, loss_content, loss_mse, loss_psnr, loss_l1], \
+        #                               feed_dict={input_: phone_images, target_: dslr_images})
 
-                test_losses += np.asarray(losses) / num_test_batches
+        #         test_losses += np.asarray(losses) / num_test_batches
 
-            if LEVEL < 4:
-                logs_gen = "step %d | training: %.4g, test: %.4g | content: %.4g, mse: %.4g, psnr: %.4g, l1: %.4g, " \
-                           "ms-ssim: %.4g\n" % (i, training_loss, test_losses[0][0], test_losses[0][1],
-                                                test_losses[0][2], test_losses[0][3], test_losses[0][4], test_losses[0][5])
-            else:
-                logs_gen = "step %d | training: %.4g, test: %.4g | content: %.4g, mse: %.4g, psnr: %.4g, l1: %.4g\n" % \
-                       (i, training_loss, test_losses[0][0], test_losses[0][1], test_losses[0][2], test_losses[0][3], test_losses[0][4])
-            print(logs_gen)
+        #     if LEVEL < 4:
+        #         logs_gen = "step %d | training: %.4g, test: %.4g | content: %.4g, mse: %.4g, psnr: %.4g, l1: %.4g, " \
+        #                    "ms-ssim: %.4g\n" % (i, training_loss, test_losses[0][0], test_losses[0][1],
+        #                                         test_losses[0][2], test_losses[0][3], test_losses[0][4], test_losses[0][5])
+        #     else:
+        #         logs_gen = "step %d | training: %.4g, test: %.4g | content: %.4g, mse: %.4g, psnr: %.4g, l1: %.4g\n" % \
+        #                (i, training_loss, test_losses[0][0], test_losses[0][1], test_losses[0][2], test_losses[0][3], test_losses[0][4])
+        #     print(logs_gen)
 
-            # Save the results to log file
+        #     # Save the results to log file
 
-            logs = open("models/logs.txt", "a")
-            logs.write(logs_gen)
-            logs.write('\n')
-            logs.close()
+        #     logs = open("models/logs.txt", "a")
+        #     logs.write(logs_gen)
+        #     logs.write('\n')
+        #     logs.close()
 
-            # Save visual results for several test images
+        #     # Save visual results for several test images
 
-            bokeh_crops = sess.run(bokeh_img, feed_dict={input_: visual_test_crops, target_: dslr_images})
+        #     bokeh_crops = sess.run(bokeh_img, feed_dict={input_: visual_test_crops, target_: dslr_images})
 
-            idx = 0
-            for crop in bokeh_crops:
-                if idx < 7:
-                    before_after = np.hstack((
-                                    np.float32(misc.imresize(
-                                        np.reshape(visual_test_crops[idx, :, :, 0:3] * 255, [PATCH_HEIGHT, PATCH_WIDTH, 3]),
-                                                  [TARGET_HEIGHT, TARGET_WIDTH])) / 255.0,
-                                    crop,
-                                    np.reshape(visual_target_crops[idx], [TARGET_HEIGHT, TARGET_WIDTH, TARGET_DEPTH])))
-                    misc.imsave("results/pynet_img_" + str(idx) + "_level_" + str(LEVEL) + "_iter_" + str(i) + ".jpg",
-                                before_after)
-                idx += 1
+        #     idx = 0
+        #     for crop in bokeh_crops:
+        #         if idx < 7:
+        #             before_after = np.hstack((
+        #                             np.float32(misc.imresize(
+        #                                 np.reshape(visual_test_crops[idx, :, :, 0:3] * 255, [PATCH_HEIGHT, PATCH_WIDTH, 3]),
+        #                                           [TARGET_HEIGHT, TARGET_WIDTH])) / 255.0,
+        #                             crop,
+        #                             np.reshape(visual_target_crops[idx], [TARGET_HEIGHT, TARGET_WIDTH, TARGET_DEPTH])))
+        #             misc.imsave("results/pynet_img_" + str(idx) + "_level_" + str(LEVEL) + "_iter_" + str(i) + ".jpg",
+        #                         before_after)
+        #         idx += 1
 
-            training_loss = 0.0
+        #     training_loss = 0.0
 
-            # Saving the model that corresponds to the current iteration
-            saver.save(sess, "models/pynet_level_" + str(LEVEL) + "_iteration_" + str(i) + ".ckpt", write_meta_graph=False)
+        #     # Saving the model that corresponds to the current iteration
+        #     saver.save(sess, "models/pynet_level_" + str(LEVEL) + "_iteration_" + str(i) + ".ckpt", write_meta_graph=False)
 
         # Loading new training data
         if i % 1000 == 0:
