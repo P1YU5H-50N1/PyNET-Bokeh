@@ -165,7 +165,10 @@ with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
         training_loss += loss_temp / eval_step
 
         if i % eval_step == 0:
-
+            logs = open("models/logs.txt", "a")
+            logs.write(f"training loss: {training_loss}\n")
+            logs.write('\n')
+            logs.close()
         #     # Evaluate PyNET model
 
         #     test_losses = np.zeros((1, 6 if LEVEL < 4 else 5))
